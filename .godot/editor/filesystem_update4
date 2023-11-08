@@ -1,0 +1,9 @@
+res://Character/player.tscn
+res://Character/player.gd
+res://menu.tscn
+res://level.tscn
+res://parallax_background.tscn
+res://Character/damage_box.tscn
+res://Enemys/Skeleton enemy/skeleton_enemy.tscn
+res://Enemys/Skeleton enemy/damage_box_skeleton.tscn
+res://Enemys/Skeleton enemy/skeleton_enemy.gd

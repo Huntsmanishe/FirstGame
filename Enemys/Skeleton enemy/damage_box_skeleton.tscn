@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://1hssl1a37upf"]
+
+[ext_resource type="Script" path="res://Enemys/Skeleton enemy/damage_box_skeleton.gd" id="1_vhg88"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_55dd7"]
+size = Vector2(15, 29)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_andt8"]
+size = Vector2(56.25, 29)
+
+[node name="damage_box_skeleton" type="Node2D"]
+script = ExtResource("1_vhg88")
+
+[node name="HurtBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+shape = SubResource("RectangleShape2D_55dd7")
+
+[node name="HitBox" type="Area2D" parent="."]
+position = Vector2(1, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(26, 0)
+shape = SubResource("RectangleShape2D_andt8")
+disabled = true
