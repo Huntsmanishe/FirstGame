@@ -1,9 +1,11 @@
-res://Character/player.tscn
+res://level.tscn
 res://Character/player.gd
 res://menu.tscn
-res://level.tscn
-res://parallax_background.tscn
-res://Character/damage_box.tscn
-res://Enemys/Skeleton enemy/skeleton_enemy.tscn
-res://Enemys/Skeleton enemy/damage_box_skeleton.tscn
+res://Collectibles.gd
 res://Enemys/Skeleton enemy/skeleton_enemy.gd
+res://Character/player.tscn
+res://Enemys/Skeleton enemy/skeleton_enemy.tscn
+res://Character/Stat_bar.tscn
+res://UI.tscn
+res://Collectibles/coin.tscn
+res://Collectibles/coin.gd

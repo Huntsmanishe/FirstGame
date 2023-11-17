@@ -1,8 +1,9 @@
-[gd_scene load_steps=75 format=3 uid="uid://vr4dk8ujmfbd"]
+[gd_scene load_steps=76 format=3 uid="uid://vr4dk8ujmfbd"]
 
 [ext_resource type="Texture2D" uid="uid://nxxto1y40or7" path="res://Enemys/Skeleton enemy/Skeleton enemy.png" id="1_705uf"]
 [ext_resource type="Script" path="res://Enemys/Skeleton enemy/skeleton_enemy.gd" id="1_ws8lq"]
 [ext_resource type="PackedScene" uid="uid://1hssl1a37upf" path="res://Enemys/Skeleton enemy/damage_box_skeleton.tscn" id="3_pptsv"]
+[ext_resource type="PackedScene" uid="uid://d3h78xknysw8v" path="res://Enemys/mobe_health.tscn" id="4_q85g2"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_06612"]
 radius = 6.0
@@ -497,8 +498,8 @@ tracks/2/keys = {
 
 [sub_resource type="Animation" id="Animation_3iglc"]
 resource_name = "Death"
-length = 1.8
-step = 0.142
+length = 50.0
+step = 0.02
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -523,10 +524,46 @@ tracks/1/keys = {
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Attack/damage_box_skeleton/HitBox/CollisionShape2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Attack/damage_box_skeleton/HurtBox/CollisionShape2D:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.02),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(48.02, 49.98),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_st3d3"]
 resource_name = "Hit"
-length = 0.2
+length = 0.4
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -550,6 +587,18 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [0, 1, 2]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Attack/damage_box_skeleton/HitBox/CollisionShape2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_u8un7"]
@@ -618,6 +667,30 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Attack/damage_box_skeleton/HurtBox/CollisionShape2D:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_yrrc1"]
@@ -721,6 +794,7 @@ collision_mask = 2
 shape = SubResource("RectangleShape2D_ublxf")
 
 [node name="Attack" type="Node2D" parent="."]
+visible = false
 
 [node name="AttackZone" type="Area2D" parent="Attack"]
 collision_layer = 0
@@ -735,10 +809,11 @@ shape = SubResource("RectangleShape2D_w6ftb")
 
 [node name="HurtBox" parent="Attack/damage_box_skeleton" index="0"]
 collision_layer = 32
-collision_mask = 0
+collision_mask = 64
 
 [node name="CollisionShape2D" parent="Attack/damage_box_skeleton/HurtBox" index="0"]
 position = Vector2(-0.5, 0.5)
+disabled = true
 
 [node name="HitBox" parent="Attack/damage_box_skeleton" index="1"]
 collision_layer = 0
@@ -753,9 +828,16 @@ libraries = {
 "": SubResource("AnimationLibrary_j7k38")
 }
 
+[node name="MobeHealth" parent="." instance=ExtResource("4_q85g2")]
+position = Vector2(5.96046e-08, -19)
+scale = Vector2(0.175, 0.175)
+
 [connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
 [connection signal="body_exited" from="Detector2" to="." method="_on_area_2d_body_exited"]
 [connection signal="body_entered" from="Attack/AttackZone" to="." method="_on_attack_zone_body_entered"]
+[connection signal="area_entered" from="Attack/damage_box_skeleton/HurtBox" to="MobeHealth" method="_on_hurt_box_area_entered"]
 [connection signal="area_entered" from="Attack/damage_box_skeleton/HitBox" to="." method="_on_hit_box_area_entered"]
+[connection signal="damage_received" from="MobeHealth" to="." method="_on_mobe_health_damage_received"]
+[connection signal="no_health" from="MobeHealth" to="." method="_on_mobe_health_no_health"]
 
 [editable path="Attack/damage_box_skeleton"]

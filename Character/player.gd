@@ -1,7 +1,5 @@
 extends CharacterBody2D
 
-signal health_changed(new_health)
-
 enum{
 	MOVE,
 	ATTACK,
@@ -21,17 +19,19 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var state = MOVE
 var sprint = 1
 var combo = false
-var max_health = 100
-var health 
 var damage_basic = 20
 var damage_multiplier = 1
 var damage_current
+var recovery = false
+var heal_recov = false
+
 @onready var anim = $AnimatedSprite2D
 @onready var animPlayer =$AnimationPlayer
+@onready var stats = $Stats
 
 func _ready():
 	Signals.connect("enemy_attack", Callable(self,"_on_damage_received"))
-	health = max_health
+
 func _physics_process(delta):
 	match state:
 		MOVE:
@@ -40,8 +40,6 @@ func _physics_process(delta):
 			attack_state()
 		ATTACK2:
 			attack2_state()
-		ATTACK_COMBO:
-			pass
 		BLOCK:
 			pass
 		ROLL:
@@ -53,21 +51,21 @@ func _physics_process(delta):
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y += gravity * delta
-		
 	damage_current = damage_basic * damage_multiplier
 	
 	# Handle Jump.
-	if Input.is_action_just_pressed("Jump") and is_on_floor():
+	if Input.is_action_just_pressed("Jump") and is_on_floor() and state != ROLL:
 		velocity.y = JUMP_VELOCITY
 		animPlayer.play("Jump")
 		
-	if velocity.y > 0:
-		anim.play("fall")
+	if velocity.y > 0 and not is_on_floor():
+		animPlayer.play("Fall")
 		
 	move_and_slide()
 
 
 func move_state():
+	
 	var direction = Input.get_axis("Left", "Right")
 	if direction:
 		velocity.x = direction * SPEED * sprint
@@ -87,26 +85,43 @@ func move_state():
 		$AnimatedSprite2D.flip_h = false
 		$DamageBox.rotation_degrees = 0
 		
-	if Input.is_action_pressed("Sprint"):
-		sprint = 2
+	if Input.is_action_pressed("Sprint") and recovery == false:
+		stats.stamina_cost = stats.sprint_cost
+		if stats.stamina_cost < stats.stamina and velocity.x != 0:
+			stats.stamina -= stats.sprint_cost
+			sprint = 1.6
 	else:
 		sprint = 1
 	if velocity.x != 0:
-		if Input.is_action_just_pressed("Roll"):
-			state = ROLL
-	if Input.is_action_just_pressed("Attack"):
-		velocity.x = 0
-		state = ATTACK
+		if Input.is_action_just_pressed("Roll") and recovery == false and is_on_floor():
+			stats.stamina_cost = stats.roll_cost
+			if stats.stamina_cost < stats.stamina:
+				state = ROLL
+	if Input.is_action_just_pressed("Attack") and recovery == false:
+		stats.stamina_cost = stats.attack_cost
+		if stats.stamina_cost < stats.stamina:
+			velocity.x = 0
+			state = ATTACK
+	
+	if Input.is_action_just_pressed("Heal") and heal_recov == false and stats.poisons_count:
+		stats.heal()
+		heal_recov = true
+		await get_tree().create_timer(15).timeout
+		heal_recov = false
 
 
 func roll_state():
+	if $AnimatedSprite2D.flip_h == true:
+		velocity.x -= 3
+	else:
+		velocity.x += 3
 	animPlayer.play("Roll")
 	await animPlayer.animation_finished
 	state = MOVE
 	
 func attack_state():
 	damage_multiplier = 1
-	if Input.is_action_just_pressed("Attack") and combo == true:
+	if Input.is_action_just_pressed("Attack") and combo == true and stats.stamina_cost < stats.stamina:
 		state = ATTACK2
 	animPlayer.play("Attack")
 	await animPlayer.animation_finished
@@ -114,7 +129,7 @@ func attack_state():
 	state = MOVE
 	
 func attack2_state():
-	damage_multiplier = 0.7
+	damage_multiplier = 1.7
 	animPlayer.play("Attack2")
 	await animPlayer.animation_finished
 	state = MOVE
@@ -131,7 +146,6 @@ func death_state():
 	get_tree().change_scene_to_file("res://menu.tscn")
 	
 func damage_state():
-	velocity.x = 0
 	animPlayer.play("Hit")
 	await animPlayer.animation_finished
 	state = MOVE
@@ -141,13 +155,29 @@ func _on_damage_received(enemy_damage):
 		enemy_damage = 0
 	else:
 		state = DAMAGE
-	health -= enemy_damage
-	if health <= 0:
-		health = 0
+		damage_anim()
+	stats.health -= enemy_damage
+	if stats.health <= 0:
+		stats.health = 0
 		state = DEATH
 	
-	emit_signal("health_changed", health)
 	
 
-func _on_hit_box_area_entered(area):
+func _on_hit_box_area_entered(_area):
 	Signals.emit_signal("player_attack", damage_current)
+
+
+
+func _on_stats_no_stamina():
+	recovery = true
+	await get_tree().create_timer(3).timeout
+	recovery = false
+
+func damage_anim():
+	velocity.x = 0
+	if $AnimatedSprite2D.flip_h == true:
+		velocity.x += 200
+	else:
+		velocity.x -= 200
+	var tween = get_tree().create_tween()
+	tween.parallel().tween_property(self, "velocity", Vector2.ZERO, 0.1)

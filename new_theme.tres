@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://qe6bqc23p3u3"]
+
+[ext_resource type="FontFile" uid="uid://d2p4saejv1ffd" path="res://Sta.Toasty_font (1).ttf" id="1_6sxl5"]
+
+[resource]
+default_font = ExtResource("1_6sxl5")
+Label/fonts/font = ExtResource("1_6sxl5")

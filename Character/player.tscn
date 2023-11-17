@@ -1,4 +1,4 @@
-[gd_scene load_steps=106 format=3 uid="uid://dx47k1s0a6mwf"]
+[gd_scene load_steps=107 format=3 uid="uid://dx47k1s0a6mwf"]
 
 [ext_resource type="Texture2D" uid="uid://bc3xpm5rw1mpa" path="res://Character/Colour1/Outline/120x80_PNGSheets/_Idle.png" id="1_62vcp"]
 [ext_resource type="Script" path="res://Character/player.gd" id="1_l7ndx"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://bh3s13fbgfrtg" path="res://Character/Colour1/Outline/120x80_PNGSheets/_Hit.png" id="10_gxtre"]
 [ext_resource type="Texture2D" uid="uid://cdympqpadbk4j" path="res://Character/Colour1/Outline/120x80_PNGSheets/_Roll.png" id="11_464ne"]
 [ext_resource type="PackedScene" uid="uid://dh8tp4rhbdg3c" path="res://Character/damage_box.tscn" id="13_4q6qt"]
+[ext_resource type="PackedScene" uid="uid://dj8jt8x250fb5" path="res://Character/Stat_bar.tscn" id="14_a0wr8"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wvquk"]
 radius = 5.0
@@ -659,7 +660,7 @@ tracks/2/path = NodePath(".")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0.1663),
+"times": PackedFloat32Array(0.2494),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
@@ -677,6 +678,20 @@ tracks/3/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [true, false, true]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Stats")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.0061),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"stamina_consuption"
+}]
 }
 
 [sub_resource type="Animation" id="Animation_vi8ev"]
@@ -718,6 +733,20 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [true, false, true]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Stats")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"stamina_consuption"
+}]
 }
 
 [sub_resource type="Animation" id="Animation_obvli"]
@@ -804,6 +833,18 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("DamageBox/HitBox/CollisionShape2D:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_o7332"]
@@ -905,8 +946,8 @@ tracks/2/keys = {
 
 [sub_resource type="Animation" id="Animation_1hiut"]
 resource_name = "Roll"
-length = 0.65
-step = 0.0591
+length = 0.55
+step = 0.02
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -926,10 +967,24 @@ tracks/1/path = NodePath("AnimatedSprite2D:frame")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.0591, 0.1182, 0.1773, 0.2364, 0.2955, 0.3546, 0.4137, 0.4728, 0.5319, 0.591),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.06, 0.12, 0.18, 0.24, 0.3, 0.38, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11]
+"values": [0, 1, 3, 5, 6, 7, 9, 11]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Stats")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"stamina_consuption"
+}]
 }
 
 [sub_resource type="Animation" id="Animation_cneug"]
@@ -988,6 +1043,20 @@ tracks/1/keys = {
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 }
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Stats")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"stamina_consuption"
+}]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_iswly"]
 _data = {
@@ -1021,11 +1090,8 @@ animation = &"hit"
 autoplay = "Idle"
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(4, 4)
+zoom = Vector2(3.6, 3.6)
 process_callback = 0
-limit_left = 0
-limit_right = 1168
-limit_bottom = 645
 position_smoothing_enabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -1044,13 +1110,18 @@ collision_layer = 16
 collision_mask = 0
 
 [node name="HitBox" parent="DamageBox" index="1"]
-collision_layer = 0
+collision_layer = 64
 collision_mask = 32
 
 [node name="CollisionShape2D" parent="DamageBox/HitBox" index="0"]
 position = Vector2(28, 2)
 disabled = false
 
+[node name="Stats" parent="." instance=ExtResource("14_a0wr8")]
+
+[node name="Timer" type="Timer" parent="."]
+
 [connection signal="area_entered" from="DamageBox/HitBox" to="." method="_on_hit_box_area_entered"]
+[connection signal="no_stamina" from="Stats" to="." method="_on_stats_no_stamina"]
 
 [editable path="DamageBox"]

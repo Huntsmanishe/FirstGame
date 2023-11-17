@@ -28,10 +28,6 @@ var SPEED = 25.0
 var alive = true
 var attacking = false
 var damage = 20
-var health = 100
-
-func _ready():
-	Signals.connect("player_attack", Callable(self,"_on_damage_received"))
 
 func _physics_process(delta):
 	# Add the gravity.
@@ -52,29 +48,26 @@ func _physics_process(delta):
 		else:
 			velocity.x = 0
 			animMob.play("Idle")
-
 		if direction.x < 0:
 			$AnimatedSprite2D.flip_h = true
 		elif direction.x > 0:
 			$AnimatedSprite2D.flip_h = false
-
 	move_and_slide()
 
-func _on_detector_body_entered(body):
+func _on_detector_body_entered(_body):
 	chase = true
 
-func _on_area_2d_body_exited(body):
+func _on_area_2d_body_exited(_body):
 	chase = false
 
-func _on_attack_zone_body_entered(body):
+func _on_attack_zone_body_entered(_body):
 	state = ATTACK
-
+	
 func idle_state():
 	animMob.play("Idle")
 	await get_tree().create_timer(1).timeout
 	$Attack/AttackZone/CollisionShape2D.disabled = false
 	
-
 func attack_state():
 	if not attacking:
 		if alive == true:
@@ -93,22 +86,19 @@ func damage_state():
 	state = IDLE
 	
 func death_state():
+#	Signals.emit_signal("enemy_died", position)
 	alive = false
 	velocity.x = 0
 	animMob.play("Death")
 	await animMob.animation_finished
 	queue_free()
 
-func _on_hit_box_area_entered(area):
+func _on_hit_box_area_entered(_area):
 	Signals.emit_signal("enemy_attack", damage)
 	
-func _on_damage_received(player_damage):
-	health -= player_damage
-	print (player_damage)
-	if health <= 0:
-		health = 0
-		state = DEATH
-	else:
-		state = IDLE
-		state = DAMAGE
+func _on_mobe_health_no_health():
+	state = DEATH
 	
+func _on_mobe_health_damage_received():
+	state = IDLE
+	state = DAMAGE
